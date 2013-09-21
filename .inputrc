@@ -1,0 +1,45 @@
+# This config file is for GNU's readline
+
+# Fix some common missing keymap things
+"\e[3~": delete-char
+"\e[1~": beginning-of-line
+"\e[4~": end-of-line
+
+# Turns off beeps
+set bell-style none
+
+# Makes TAB completion ignore case
+set completion-ignore-case On
+
+# Makes ~ be expanded to /home/user when TAB is hit
+set expand-tilde On
+
+# Puts a -F switch on internal ls when TAB is hit twice to complete
+# ambiguous filenames
+set visible-stats On
+
+# Make it like vi
+set editing-mode vi
+
+$if mode=vi
+
+# Not sure what these are from; I'm going to leave them here
+set keymap vi
+"\e[3~": delete-char
+"\e[1~": beginning-of-line
+"\e[4~": end-of-line
+
+# Allow Ctrl-L to clear screen in vi insert mode
+set keymap vi-insert
+Control-l: clear-screen
+
+# Stop Esc from doing anything in vi movement mode
+# Otherwise you have to hit 3 keys to get back to insert mode
+set keymap vi-move
+Escape: ""
+
+# who actually uses this fucking shit and doesn't hate the universe as a
+# consequence?
+v: "iv"
+
+$endif
