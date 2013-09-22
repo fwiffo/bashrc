@@ -180,7 +180,7 @@ XU="\[${COLOR_CLEAR}${UCOL}\]"
 XH="\[${COLOR_CLEAR}${HCOL}\]"
 XC="\[${COLOR_CLEAR}\]"
 
-PS1_line1="${XL}╭━ ${XT}\d, \A${XL} ◄━━ ${XU}\u${XL}@${XH}\h ${XL}◄━━ ${XD}\${PWD}${XL} ◄━━"
+PS1_line1="${XL}╭━ ${XD}\${PWD}${XL} ◄━━ ${XU}\u${XL}@${XH}\h ${XL}◄━━ ${XT}\d, \A${XL} ◄━━"
 PS1_line2="${XL}╰━━► ${XC}"
 PS1="\n${PS1_line1}\n${PS1_line2}"
 PS2="${XL}╰━━► ${XC}"
