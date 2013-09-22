@@ -1,2 +1,0 @@
-#!/bin/sh
-alias su="su -m"
