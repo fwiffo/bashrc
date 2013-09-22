@@ -38,8 +38,8 @@ Control-l: clear-screen
 set keymap vi-move
 Escape: ""
 
-# who actually uses this fucking shit and doesn't hate the universe as a
-# consequence?
+# Disable v from launching vim while in command mode; that's unlikely to be
+# helpful.
 v: "iv"
 
 $endif
