@@ -27,15 +27,15 @@ fi
 # Admin/root is red
 # Other is gray/white
 case $USER in
-    phong)          UCOL=$F_LGREEN; SCOL0=$F_DGREEN; SCOL1=$F_LGREEN;;
-    fwiffo)         UCOL=$F_LGREEN; SCOL0=$F_DGREEN; SCOL1=$F_LGREEN;;
-    tom)            UCOL=$F_DGREEN; SCOL0=$F_DGREEN; SCOL1=$F_LGREEN;;
-    Tom)            UCOL=$F_DGREEN; SCOL0=$F_DGREEN; SCOL1=$F_LGREEN;;
-    tschumm)        UCOL=$F_DGREEN; SCOL0=$F_DGREEN; SCOL1=$F_LGREEN;;
-    root)           UCOL=$F_LRED  ; SCOL0=$F_DRED  ; SCOL1=$F_LRED  ;;
-    Administrator)  UCOL=$F_DRED  ; SCOL0=$F_DRED  ; SCOL1=$F_LRED  ;;
-    admin)          UCOL=$F_DRED  ; SCOL0=$F_DRED  ; SCOL1=$F_LRED  ;;
-    *)              UCOL=$F_DWHITE; SCOL0=$F_DWHITE; SCOL1=$F_LWHITE;;
+    phong)          UCOL=$F_LGREEN;;
+    fwiffo)         UCOL=$F_LGREEN;;
+    tom)            UCOL=$F_DGREEN;;
+    Tom)            UCOL=$F_DGREEN;;
+    tschumm)        UCOL=$F_DGREEN;;
+    root)           UCOL=$F_LRED  ;;
+    Administrator)  UCOL=$F_DRED  ;;
+    admin)          UCOL=$F_DRED  ;;
+    *)              UCOL=$F_DWHITE;;
 esac
 
 # Environment
@@ -108,14 +108,13 @@ function setdircolor { # {{{
 function setloadcolor { # {{{
     if [ -f /proc/loadavg ]; then
         local LOAD=`cat /proc/loadavg`
-        # LOAD=`echo -n ${LOAD%% *} 100\*p|dc`
-        # LOAD=${LOAD%%.*}
         LOAD=${LOAD%% *}
         LOAD=${LOAD%%.*}${LOAD##*.}
     else
         LOAD=0
     fi
     if [ $NUM_COLORS -ge 256 ]; then
+        TCOL=$F_0x21
         if   [ $LOAD -lt  10 ]; then LCOL=$F_0x15
         elif [ $LOAD -lt  20 ]; then LCOL=$F_0x1b
         elif [ $LOAD -lt  30 ]; then LCOL=$F_0x21
@@ -139,6 +138,7 @@ function setloadcolor { # {{{
         else                         LCOL=$F_0xc4
         fi
     else
+        TCOL=$F_DCYAN
         if   [ $LOAD -lt  10 ]; then LCOL=$F_DBLUE
         elif [ $LOAD -lt  20 ]; then LCOL=$F_LBLUE
         elif [ $LOAD -lt  30 ]; then LCOL=$F_DCYAN
@@ -151,15 +151,10 @@ function setloadcolor { # {{{
         else                         LCOL=$F_LRED
         fi
     fi
-    if [ ! -O . ]; then
-        SCOL="$SCOL0"
-    else
-        SCOL="$SCOL1"
-    fi
     PWD2=${PWD%/"${PWD##*/}"}
     PWD2=${PWD2##?*/}/${PWD##*/}
-    export PY_PS1="${SCOL}>>> ${COLOR_CLEAR}"
-    export PY_PS2="${SCOL}... ${COLOR_CLEAR}"
+    export PY_PS1="${UCOL}>>> ${COLOR_CLEAR}"
+    export PY_PS2="${UCOL}... ${COLOR_CLEAR}"
 } # }}}
 
 function settitle { # {{{
@@ -176,10 +171,19 @@ PROMPT_COMMAND="
     [ \`declare -F setdircolor\` ]  && setdircolor
     [ \`declare -F setloadcolor\` ] && setloadcolor
     [ \`declare -F settitle\` ]     && settitle \"${USER}@${BASE_HOSTNAME}:\${PWD2}\""
-PS1="\[${COLOR_CLEAR}${UCOL}\]\u\[\${LCOL}\]@\[${HCOL}\]${BASE_HOSTNAME}\[${COLOR_CLEAR}\]\[\${SCOL}\]:\[\${DCOL}\]\$PWD2\[$COLOR_CLEAR\${SCOL}\] \\$ \[$COLOR_CLEAR\]"
-#PS1="\[${UCOL}\]\u\[\${LCOL}\]@\[${HCOL}\]\h\[\${SCOL}\]:\[\${DCOL}\]\$PWD2\[$COLOR_CLEAR\${SCOL}\] \\$ \[$COLOR_CLEAR\]"
-PS2='\[${COLOR_CLEAR}${SCOL}\]> \[$COLOR_CLEAR\]'
-PS4='+ '
+
+# SCOL and LCOL change with every prompt, UCOL and HCOL should not
+XL="\[${COLOR_CLEAR}\${LCOL}\]"
+XD="\[${COLOR_CLEAR}\${DCOL}\]"
+XT="\[${COLOR_CLEAR}\${TCOL}\]"
+XU="\[${COLOR_CLEAR}${UCOL}\]"
+XH="\[${COLOR_CLEAR}${HCOL}\]"
+XC="\[${COLOR_CLEAR}\]"
+
+PS1_line1="${XL}╭━ ${XT}\d, \A${XL} ◄━━ ${XU}\u${XL}@${XH}\h ${XL}◄━━ ${XD}\${PWD}${XL} ◄━━"
+PS1_line2="${XL}╰━━► ${XC}"
+PS1="\n${PS1_line1}\n${PS1_line2}"
+PS2="${XL}╰━━► ${XC}"
 
 export PATH CDPATH INPUTRC EDITOR VISUAL PAGER SHELL PS1 PS2 PS4 PROMPT_COMMAND
 export PYTHONSTARTUP HOSTNAME LANG LC_ALL
