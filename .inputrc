@@ -11,9 +11,6 @@ set bell-style none
 # Makes TAB completion ignore case
 set completion-ignore-case On
 
-# Makes ~ be expanded to /home/user when TAB is hit
-set expand-tilde On
-
 # Puts a -F switch on internal ls when TAB is hit twice to complete
 # ambiguous filenames
 set visible-stats On

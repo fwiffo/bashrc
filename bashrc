@@ -1,46 +1,60 @@
+# vim:sts=4:sw=4
 # ============================================================================
 # Author - Tom Schumm <phong@phong.org>
+# Source this from the end of the .bashrc provided to you by your distro or
+# sysadmin to make everything more awesome.
 # ============================================================================
 
-# TODO: Skip lots of this stuff if the terminal is dumb or is an
+# TODO(fwiffo): Skip lots of this stuff if the terminal is dumb or is an
 # scp command or whatnot.
 
-# Source global definitions
+# == Initializations that have to run early ======================  # {{{
+
+# Used in prompt and title
 [ -n "$HOSTNAME" ] || HOSTNAME=`hostname`
 BASE_HOSTNAME=${HOSTNAME%%.*}
+USERHOST="$USER@$BASE_HOSTNAME"
+
+# Meh, this will usually be fine
+if [ "$TERM" == "screen" ]; then
+    TERM=xterm-256color
+fi
+
+# ================================================================  # }}}
+
+# == Load some helpers ===========================================  # {{{
+
+# Let there be color!
 [ -f ~/.bashkit/gencolors ] && . ~/.bashkit/gencolors
 
-# Shell options
-if [ -n "$BASH_VERSINFO" ] && [ ${BASH_VERSINFO[0]} -ge 2 ]; then
-    shopt -s extglob
-    shopt -s cdspell
+if [ $NUM_COLORS -ge 256 ]; then
+  source ~/.bashkit/colorize_256.sh
+elif [ $NUM_COLORS -ge 16 ]; then
+  source ~/.bashkit_colorize_16.sh
+else
+  source ~/.bashkit_colorize_void.sh
 fi
+
+source ~/.bashkit/util.sh
+
+# TODO(fwiffo): Hack, do this better later
+PROMPT_COMMAND=""
 
 # Host specific settings, consider making .bashrc.local for this
 if [ -f ~/.bashkit/bashrc.$BASE_HOSTNAME ]; then
     . ~/.bashkit/bashrc.$BASE_HOSTNAME
 else
-    HCOL=$F_DWHITE
+    COLOR_HOST=$F_DWHITE
 fi
 
-# My users are green
-# Admin/root is red
-# Other is gray/white
-case $USER in
-    phong)          UCOL=$F_LGREEN;;
-    fwiffo)         UCOL=$F_LGREEN;;
-    tom)            UCOL=$F_DGREEN;;
-    Tom)            UCOL=$F_DGREEN;;
-    tschumm)        UCOL=$F_DGREEN;;
-    root)           UCOL=$F_LRED  ;;
-    Administrator)  UCOL=$F_DRED  ;;
-    admin)          UCOL=$F_DRED  ;;
-    *)              UCOL=$F_DWHITE;;
-esac
+# ================================================================  # }}}
 
-# Environment
-#CDPATH=.:$HOME:/
+# == Shell options ===============================================  # {{{
 
+shopt -s extglob
+shopt -s cdspell
+
+# Options for readline
 if [ -f ~/.inputrc_$TERM ]; then
     INPUTRC="~/.inputrc_$TERM"
 elif [ -f ~/.inputrc ]; then
@@ -49,152 +63,123 @@ elif [ -f /etc/inputrc ]; then
     INPUTRC=/etc/inputrc
 fi
 
+# Use dir colors if available
+# TODO(fwiffo): get a nice .dir_colors scheme. The solarized one is a start but
+# is kinda crufty and doesn't have all the file types I care about and has some
+# nonsense ones in there too
+if [ -f ~/.dir_colors ]; then
+    eval `dircolors -b ~/.dir_colors`
+elif [ -f /etc/DIR_COLORS ]; then
+    eval `dircolors -b /etc/DIR_COLORS`
+fi
+
+# Make sure our lang stuff is set or everything breaks
 if [ "$LANG" == "" ]; then
     LANG=en_US.UTF-8
 fi
 if [ "$LC_ALL" == "" ]; then
     LC_ALL=en_US.UTF-8
 fi
+
+# ================================================================  # }}}
+
+# == Configure a fancy prompt ====================================  # {{{
+
+function set_prompt_vars() { # {{{
+
+    # Find out how much space we have for our prompt
+    local LEN_PROMPT=100
+    if [[ $COLUMNS -lt 100 ]]; then LEN_PROMPT=$COLUMNS; fi
+    LEN_BAR=$(expr $LEN_PROMPT - 3 - 1 - ${#USERHOST} - 5 - 20 - 4)
+    PROMPT_BAR=$(eval printf '━%.0s' {1..$LEN_BAR})
+
+    # Create some abbreviated paths
+    LEN_PATH=$(expr $LEN_BAR - 4)
+    PWD_2=${PWD%/"${PWD##*/}"}
+    PWD_2=${PWD_2##?*/}/${PWD##*/}
+    PWD_ELIP=$(ellipsis_path "$PWD" $LEN_PATH)
+
+    # Get colors for load and path
+    LOAD_AVG=$(get_loadavg)
+    C_LOAD=$(get_load_color $LOAD_AVG)
+    C_DIR=$(get_dir_color "$PWD")
+
+} # }}}
+
+function prompt_commands() { # {{{
+
+    # Get some information about the current state of the prompt
+    set_prompt_vars
+
+    # Set title and a colorized path
+    set_title "$PWD_2:$USERHOST"
+    PWD_COLOR="${COLOR_CLEAR}${C_DIR}${PWD_ELIP}${COLOR_CLEAR}"
+
+} # }}}
+
+# If we didn't set it with a local script
+if [[ $PROMPT_COMMAND == "" ]]; then
+    PROMPT_COMMAND="prompt_commands"
+fi
+
+# Shortcuts to make prompt readable
+XL="\${C_LOAD}"
+XT="\[${COLOR_CLOCK}\]"
+XU="\[${COLOR_USER}\]"
+XH="\[${COLOR_HOST}\]"
+XC="\[${COLOR_CLEAR}\]"
+
+PS1_line0="${XL}╭━ \${PROMPT_BAR} ${XU}\u${XL}@${XH}\h${XL} ◄━━ ${XT}\d, \t${XL} ◄━╯"
+PS1_line1="${XL}╭━ \${PWD_COLOR}${XL} ◄━━"
+PS1_line2="${XL}╰━━► ${XC}"
+
+PS1="\n${PS1_line0}\r${PS1_line1}\n${PS1_line2}"
+PS2="${XL}   ╰━► ${XC}"
+
+# ================================================================  # }}}
+
+# == Misc. Environment and Aliases ===============================  # {{{
+
+# My apps of choice
 EDITOR="vim"
 VISUAL="vim"
 PAGER="/usr/bin/less -X -R"
 PYTHONSTARTUP="${HOME}/.pythonrc.py"
 
-function setdircolor { # {{{
-    # Calculate a few elements/colors of the prompt as things change
-    # Background colors for major trees
-    case $PWD in
-        /usr/local*)  DCOL="$B_LBLACK"  ;;
-        /usr*)        DCOL="$B_DBLUE"   ;;
-        /var*)        DCOL="$B_DYELLOW" ;;
-        /opt*)        DCOL="$B_DMAGENTA";;
-        /proc*|/dev*) DCOL="$B_DRED"    ;;
-        *)            DCOL=""           ;;
-    esac
-# Foreground colors for more specific
-    case $PWD in
-        /sbin*|/usr/sbin*)
-                DCOL="$F_LRED$DCOL"     ;;
-        /bin*|/usr/bin*|/usr/local/bin*|/opt/bin*)
-                DCOL="$F_LGREEN$DCOL"   ;;
-        /lib*|/usr/lib*|/usr/local/lib*|/opt/lib*)
-                DCOL="$F_DWHITE$DCOL"   ;;
-        /usr/include*|/usr/local/include*)
-                DCOL="$F_DGREEN$DCOL"   ;;
-        /usr/share*|/usr/local/share*)
-                DCOL="$F_LMAGENTA$DCOL" ;;
-        /usr/src*|/usr/local/src*)
-                DCOL="$F_LCYAN$DCOL"    ;;
-        /usr/games*|/usr/local/games*|/opt/games*)
-                DCOL="$F_DCYAN$DCOL"    ;;
-        /boot*) DCOL="$F_DRED$DCOL"     ;;
-        /usr/local/*/home*)
-                DCOL="$F_LCYAN"         ;;
-        /home*) DCOL="$F_LCYAN$DCOL"    ;;
-        /Users*)DCOL="$F_LCYAN$DCOL"    ;;
-        /root*) DCOL="$F_DYELLOW$DCOL"  ;;
-        /etc*)  DCOL="$F_DGREEN$DCOL"   ;;
-        /dev*)  DCOL="$F_LYELLOW$DCOL"  ;;
-        /proc*) DCOL="$F_LWHITE$DCOL"   ;;
-        /mnt*)  DCOL="$F_DCYAN$DCOL"    ;;
-        /tmp*|/var/tmp*)
-                DCOL="$F_LYELLOW$DCOL"  ;;
-#       /usr*|/var*|/opt*)
-#               DCOL="$F_LWHITE$DCOL"   ;;
-        *)      DCOL="$F_LWHITE$DCOL"   ;;
-    esac
-} # }}}
+# Editor behavior
+alias vi="vim -o -X"
+alias vim="vim -o -X"
+alias vimdiff="vimdiff -X"
+alias emacs='emacs -nw'
 
-function setloadcolor { # {{{
-    if [ -f /proc/loadavg ]; then
-        local LOAD=`cat /proc/loadavg`
-        LOAD=${LOAD%% *}
-        LOAD=${LOAD%%.*}${LOAD##*.}
-    else
-        LOAD=0
-    fi
-    if [ $NUM_COLORS -ge 256 ]; then
-        TCOL=$F_0x21
-        if   [ $LOAD -lt  10 ]; then LCOL=$F_0x15
-        elif [ $LOAD -lt  20 ]; then LCOL=$F_0x1b
-        elif [ $LOAD -lt  30 ]; then LCOL=$F_0x21
-        elif [ $LOAD -lt  40 ]; then LCOL=$F_0x27
-        elif [ $LOAD -lt  50 ]; then LCOL=$F_0x2d
-        elif [ $LOAD -lt  60 ]; then LCOL=$F_0x33
-        elif [ $LOAD -lt  70 ]; then LCOL=$F_0x32
-        elif [ $LOAD -lt  80 ]; then LCOL=$F_0x31
-        elif [ $LOAD -lt  90 ]; then LCOL=$F_0x30
-        elif [ $LOAD -lt 100 ]; then LCOL=$F_0x2f
-        elif [ $LOAD -lt 110 ]; then LCOL=$F_0x2e
-        elif [ $LOAD -lt 120 ]; then LCOL=$F_0x52
-        elif [ $LOAD -lt 130 ]; then LCOL=$F_0x76
-        elif [ $LOAD -lt 140 ]; then LCOL=$F_0x9a
-        elif [ $LOAD -lt 150 ]; then LCOL=$F_0xbe
-        elif [ $LOAD -lt 160 ]; then LCOL=$F_0xe2
-        elif [ $LOAD -lt 170 ]; then LCOL=$F_0xdc
-        elif [ $LOAD -lt 180 ]; then LCOL=$F_0xd6
-        elif [ $LOAD -lt 190 ]; then LCOL=$F_0xd0
-        elif [ $LOAD -lt 200 ]; then LCOL=$F_0xca
-        else                         LCOL=$F_0xc4
-        fi
-    else
-        TCOL=$F_DCYAN
-        if   [ $LOAD -lt  10 ]; then LCOL=$F_DBLUE
-        elif [ $LOAD -lt  20 ]; then LCOL=$F_LBLUE
-        elif [ $LOAD -lt  30 ]; then LCOL=$F_DCYAN
-        elif [ $LOAD -lt  50 ]; then LCOL=$F_DGREEN
-        elif [ $LOAD -lt  70 ]; then LCOL=$F_LCYAN
-        elif [ $LOAD -lt  90 ]; then LCOL=$F_LGREEN
-        elif [ $LOAD -lt 110 ]; then LCOL=$F_LYELLOW
-        elif [ $LOAD -lt 140 ]; then LCOL=$F_DYELLOW
-        elif [ $LOAD -lt 170 ]; then LCOL=$F_DRED
-        else                         LCOL=$F_LRED
-        fi
-    fi
-    PWD2=${PWD%/"${PWD##*/}"}
-    PWD2=${PWD2##?*/}/${PWD##*/}
-    export PY_PS1="${UCOL}>>> ${COLOR_CLEAR}"
-    export PY_PS2="${UCOL}... ${COLOR_CLEAR}"
-} # }}}
+# ls shortcuts
+alias d="ls -F --color=always"
+alias ll="ls -Fl --color=always"
+alias dir="ls -Flh --color=always"
+alias dirh="ls -Flha --color=always"
 
-function settitle { # {{{
-    case $TERM in
-        xterm*|konsole*|rxvt*|eterm*|cygwin*)
-            echo -ne "\033]0;$1\007";;
-        screen)
-            echo -ne "\033_$1\033\\"
-    esac
-} # }}}
+# Disk space
+alias dush='du -sh'
+alias dus='du -s'
+alias duh='du -h'
+alias dfh='df -h'
 
-# If they're using screen or an xterm, set the title with each prompt
-PROMPT_COMMAND="
-    [ \`declare -F setdircolor\` ]  && setdircolor
-    [ \`declare -F setloadcolor\` ] && setloadcolor
-    [ \`declare -F settitle\` ]     && settitle \"${USER}@${BASE_HOSTNAME}:\${PWD2}\""
-
-# SCOL and LCOL change with every prompt, UCOL and HCOL should not
-XL="\[${COLOR_CLEAR}\${LCOL}\]"
-XD="\[${COLOR_CLEAR}\${DCOL}\]"
-XT="\[${COLOR_CLEAR}\${TCOL}\]"
-XU="\[${COLOR_CLEAR}${UCOL}\]"
-XH="\[${COLOR_CLEAR}${HCOL}\]"
-XC="\[${COLOR_CLEAR}\]"
-
-PS1_line1="${XL}╭━ ${XD}\${PWD}${XL} ◄━━ ${XU}\u${XL}@${XH}\h ${XL}◄━━ ${XT}\d, \A${XL} ◄━━"
-PS1_line2="${XL}╰━━► ${XC}"
-PS1="\n${PS1_line1}\n${PS1_line2}"
-PS2="${XL}╰━━► ${XC}"
+# Misc.
+alias less='less -X -R'
+alias cls='clear'
+alias x='exit'
+alias bc='bc -l'
+alias chall='chmod -R a+rX'
+function mcd {
+    mkdir "$@"; cd "$@"
+}
+function rcd {
+    cd `readlink "$@"`
+}
+alias rebash='source ~/.bashrc'
 
 export PATH CDPATH INPUTRC EDITOR VISUAL PAGER SHELL PS1 PS2 PS4 PROMPT_COMMAND
 export PYTHONSTARTUP HOSTNAME LANG LC_ALL
 
-if   [ -f ~/.dir_colors ]; then
-    eval `dircolors -b ~/.dir_colors`
-elif [ -f /etc/DIR_COLORS ]; then
-    eval `dircolors -b /etc/DIR_COLORS`
-fi
+# ================================================================  # }}}
 
-# Aliases
-if [ -f ~/.bashkit/bash_aliases ]; then
-    . ~/.bashkit/bash_aliases
-fi

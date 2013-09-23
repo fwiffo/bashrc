@@ -19,6 +19,9 @@ function gencolors {
     COLOR_NAMES="BLACK RED GREEN YELLOW BLUE MAGENTA CYAN WHITE"
     COLOR_CLEAR=`tput sgr0 2> /dev/null`
     NUM_COLORS=`tput colors 2> /dev/null`
+    if [ "$NUM_COLORS" == "" ]; then
+        NUM_COLORS=0
+    fi
     if [ $? -gt 0 ] || [ $NUM_COLORS -lt 8 ]; then
         # Aw, terminfo is broke or something
         for COLORNAME in $COLOR_NAMES ; do
