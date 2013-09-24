@@ -5,6 +5,7 @@
 # Super fancy colors!
 # ============================================================================
 
+# TODO(fwiffo): Change with time of day!
 COLOR_CLOCK=$F_0xb1
 
 # My users are green, admin/root is red, other is gray/white
@@ -77,34 +78,30 @@ function get_load_color() { # {{{
         return
     fi
 
-    if   [[ $1 -lt  10 ]]; then echo $F_0x11
-    elif [[ $1 -lt  20 ]]; then echo $F_0x12
-    elif [[ $1 -lt  30 ]]; then echo $F_0x13
-    elif [[ $1 -lt  40 ]]; then echo $F_0x14
-    elif [[ $1 -lt  50 ]]; then echo $F_0x15
-    elif [[ $1 -lt  60 ]]; then echo $F_0x1b
-    elif [[ $1 -lt  70 ]]; then echo $F_0x21
-    elif [[ $1 -lt  80 ]]; then echo $F_0x27
-    elif [[ $1 -lt  90 ]]; then echo $F_0x2d
-    elif [[ $1 -lt 100 ]]; then echo $F_0x33
-    elif [[ $1 -lt 110 ]]; then echo $F_0x57
-    elif [[ $1 -lt 120 ]]; then echo $F_0x7b
-    elif [[ $1 -lt 130 ]]; then echo $F_0x9f
-    elif [[ $1 -lt 140 ]]; then echo $F_0xc3
-    elif [[ $1 -lt 150 ]]; then echo $F_0xe7
-    elif [[ $1 -lt 160 ]]; then echo $F_0xe6
-    elif [[ $1 -lt 170 ]]; then echo $F_0xe5
-    elif [[ $1 -lt 180 ]]; then echo $F_0xe4
-    elif [[ $1 -lt 190 ]]; then echo $F_0xe3
-    elif [[ $1 -lt 200 ]]; then echo $F_0xe2
-    elif [[ $1 -lt 210 ]]; then echo $F_0xdc
-    elif [[ $1 -lt 220 ]]; then echo $F_0xd6
-    elif [[ $1 -lt 230 ]]; then echo $F_0xd0
-    elif [[ $1 -lt 240 ]]; then echo $F_0xca
-    elif [[ $1 -lt 250 ]]; then echo $F_0xa0
-    elif [[ $1 -lt 260 ]]; then echo $F_0x7c
-    elif [[ $1 -lt 270 ]]; then echo $F_0x58
-    else                        echo $F_0x34
+    if   [[ $1 -lt  10 ]]; then echo $F_0x13
+    elif [[ $1 -lt  20 ]]; then echo $F_0x14
+    elif [[ $1 -lt  30 ]]; then echo $F_0x15
+    elif [[ $1 -lt  40 ]]; then echo $F_0x1b
+    elif [[ $1 -lt  50 ]]; then echo $F_0x21
+    elif [[ $1 -lt  60 ]]; then echo $F_0x27
+    elif [[ $1 -lt  70 ]]; then echo $F_0x2d
+    elif [[ $1 -lt  80 ]]; then echo $F_0x33
+    elif [[ $1 -lt  90 ]]; then echo $F_0x57
+    elif [[ $1 -lt 100 ]]; then echo $F_0x7b
+    elif [[ $1 -lt 120 ]]; then echo $F_0x9f
+    elif [[ $1 -lt 120 ]]; then echo $F_0xc3
+    elif [[ $1 -lt 130 ]]; then echo $F_0xe7
+    elif [[ $1 -lt 140 ]]; then echo $F_0xe6
+    elif [[ $1 -lt 150 ]]; then echo $F_0xe5
+    elif [[ $1 -lt 160 ]]; then echo $F_0xe4
+    elif [[ $1 -lt 170 ]]; then echo $F_0xe3
+    elif [[ $1 -lt 180 ]]; then echo $F_0xe2
+    elif [[ $1 -lt 190 ]]; then echo $F_0xdc
+    elif [[ $1 -lt 200 ]]; then echo $F_0xd6
+    elif [[ $1 -lt 210 ]]; then echo $F_0xd0
+    elif [[ $1 -lt 220 ]]; then echo $F_0xca
+    elif [[ $1 -lt 230 ]]; then echo $F_0xa0
+    else                        echo $F_0x7c
     fi
 } # }}}
 
