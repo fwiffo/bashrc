@@ -91,13 +91,12 @@ function set_prompt_vars() { # {{{
     local LEN_PROMPT=100
     if [[ $COLUMNS -lt 100 ]]; then LEN_PROMPT=$COLUMNS; fi
     LEN_BAR=$(expr $LEN_PROMPT - 3 - 1 - ${#USERHOST} - 5 - 20 - 4)
-    PROMPT_BAR=$(eval printf '━%.0s' {1..$LEN_BAR})
+    PROMPT_BAR=$(eval printf '─%.0s' {1..$LEN_BAR})
 
     # Create some abbreviated paths
     LEN_PATH=$(expr $LEN_BAR - 4)
-    PWD_2=${PWD%/"${PWD##*/}"}
-    PWD_2=${PWD_2##?*/}/${PWD##*/}
     PWD_ELIP=$(ellipsis_path "$PWD" $LEN_PATH)
+    PWD_TITLE=$(ellipsis_path "$PWD" $(expr $COLUMNS / 3))
 
     # Get colors for load and path
     LOAD_AVG=$(get_loadavg)
@@ -112,7 +111,7 @@ function prompt_commands() { # {{{
     set_prompt_vars
 
     # Set title and a colorized path
-    set_title "$PWD_2:$USERHOST"
+    set_title "$PWD_TITLE « $USERHOST"
     PWD_COLOR="${COLOR_CLEAR}${C_DIR}${PWD_ELIP}${COLOR_CLEAR}"
 
 } # }}}
@@ -122,19 +121,20 @@ if [[ $PROMPT_COMMAND == "" ]]; then
     PROMPT_COMMAND="prompt_commands"
 fi
 
-# Shortcuts to make prompt readable
-XL="\${C_LOAD}"
+# Shortcuts to make prompt readable - colors must have \[\] around them so that
+# bash is aware that they're zero width; otherwise the prompt will act funny
+XL="\[\${C_LOAD}\]"
 XT="\[${COLOR_CLOCK}\]"
 XU="\[${COLOR_USER}\]"
 XH="\[${COLOR_HOST}\]"
 XC="\[${COLOR_CLEAR}\]"
 
-PS1_line0="${XL}╭━ \${PROMPT_BAR} ${XU}\u${XL}@${XH}\h${XL} ◄━━ ${XT}\d, \t${XL} ◄━╯"
-PS1_line1="${XL}╭━ \${PWD_COLOR}${XL} ◄━━"
-PS1_line2="${XL}╰━━► ${XC}"
+PS1_line0="${XL}╭─ \${PROMPT_BAR} ${XU}\u${XL}@${XH}\h${XL} ◄── ${XT}\d, \t${XC}${XL} ◄─╯"
+PS1_line1="${XL}╭─ \${PWD_COLOR}${XL} ◄──"
+PS1_line2="${XL}╰──► ${XC}"
 
 PS1="\n${PS1_line0}\r${PS1_line1}\n${PS1_line2}"
-PS2="${XL}   ╰━► ${XC}"
+PS2="${XL}   ╰─► ${XC}"
 
 # ================================================================  # }}}
 
