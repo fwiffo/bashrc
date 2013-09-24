@@ -18,6 +18,8 @@ function gencolors {
 
     COLOR_NAMES="BLACK RED GREEN YELLOW BLUE MAGENTA CYAN WHITE"
     COLOR_CLEAR=`tput sgr0 2> /dev/null`
+    COLOR_BOLD=`tput bold`
+    COLOR_UNDERLINE=`tput smul`
     NUM_COLORS=`tput colors 2> /dev/null`
     if [ "$NUM_COLORS" == "" ]; then
         NUM_COLORS=0
@@ -76,6 +78,8 @@ function savecolors {
 
 COLOR_NAMES="$COLOR_NAMES"
 COLOR_CLEAR='$COLOR_CLEAR'
+COLOR_BOLD='$COLOR_BOLD'
+COLOR_UNDERLINE='$COLOR_UNDERLINE'
 NUM_COLORS='$NUM_COLORS'
 COMMENT
     for COLORNAME in $COLOR_NAMES ; do
