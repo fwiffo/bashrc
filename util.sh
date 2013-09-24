@@ -24,6 +24,7 @@ function ellipsis_path() { # {{{
 
 function set_title() { # {{{
     WINDOW_TITLE="$1"
+    export WINDOW_TITLE
     case $TERM in
         xterm*|konsole*|rxvt*|eterm*|cygwin*)
             echo -ne "\033]0;$1\007";;
