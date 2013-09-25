@@ -17,7 +17,7 @@ USERHOST="$USER@$BASE_HOSTNAME"
 
 # Meh, this will usually be fine
 if [ "$TERM" == "screen" ]; then
-    TERM=xterm-256color
+    TERM=screen-256color
 fi
 
 # ================================================================  # }}}
@@ -88,15 +88,16 @@ fi
 function set_prompt_vars() { # {{{
 
     # Find out how much space we have for our prompt
-    local LEN_PROMPT=100
+    LEN_PROMPT=100
     if [[ $COLUMNS -lt 100 ]]; then LEN_PROMPT=$COLUMNS; fi
-    LEN_BAR=$(expr $LEN_PROMPT - 3 - 1 - ${#USERHOST} - 5 - 20 - 4)
-    PROMPT_BAR=$(eval printf '─%.0s' {1..$LEN_BAR})
 
     # Create some abbreviated paths
-    LEN_PATH=$(expr $LEN_BAR - 4)
+    LEN_PATH=$(expr $LEN_PROMPT - 3 - 4 - 1 - ${#USERHOST} - 5 - 20 - 4)
     PWD_ELIP=$(ellipsis_path "$PWD" $LEN_PATH)
-    PWD_TITLE=$(ellipsis_path "$PWD" $(expr $COLUMNS / 3))
+    PWD_TITLE=$(ellipsis_path "$PWD" $(expr $LEN_PROMPT / 3))
+
+    LEN_BAR=$(expr $LEN_PATH - ${#PWD_ELIP})
+    PROMPT_BAR=$(eval printf '─%.0s' {1..$LEN_BAR})
 
     # Get colors for load and path
     LOAD_AVG=$(get_loadavg)
@@ -129,11 +130,10 @@ XU="\[${COLOR_USER}\]"
 XH="\[${COLOR_HOST}\]"
 XC="\[${COLOR_CLEAR}\]"
 
-PS1_line0="${XL}╭─ \${PROMPT_BAR} ${XU}\u${XL}@${XH}\h${XL} ◄── ${XT}\d, \t${XC}${XL} ◄─╯"
-PS1_line1="${XL}╭─ \${PWD_COLOR}${XL} ◄──"
+PS1_line1="${XL}╭─ \${PWD_COLOR}${XL} ◄──\${PROMPT_BAR} ${XU}\u${XL}@${XH}\h${XL} ◄── ${XT}\d, \t${XC}${XL} ◄─╯"
 PS1_line2="${XL}╰──► ${XC}"
 
-PS1="\n${PS1_line0}\r${PS1_line1}\n${PS1_line2}"
+PS1="\n${PS1_line1}\n${PS1_line2}"
 PS2="${XL}   ╰─► ${XC}"
 
 # ================================================================  # }}}

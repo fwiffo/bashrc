@@ -89,18 +89,18 @@ function get_load_color() { # {{{
     elif [[ $1 -lt  90 ]]; then echo $F_0x57
     elif [[ $1 -lt 100 ]]; then echo $F_0x7b
     elif [[ $1 -lt 120 ]]; then echo $F_0x9f
-    elif [[ $1 -lt 120 ]]; then echo $F_0xc3
-    elif [[ $1 -lt 130 ]]; then echo $F_0xe7
-    elif [[ $1 -lt 140 ]]; then echo $F_0xe6
-    elif [[ $1 -lt 150 ]]; then echo $F_0xe5
-    elif [[ $1 -lt 160 ]]; then echo $F_0xe4
-    elif [[ $1 -lt 170 ]]; then echo $F_0xe3
-    elif [[ $1 -lt 180 ]]; then echo $F_0xe2
-    elif [[ $1 -lt 190 ]]; then echo $F_0xdc
-    elif [[ $1 -lt 200 ]]; then echo $F_0xd6
-    elif [[ $1 -lt 210 ]]; then echo $F_0xd0
-    elif [[ $1 -lt 220 ]]; then echo $F_0xca
-    elif [[ $1 -lt 230 ]]; then echo $F_0xa0
+    elif [[ $1 -lt 140 ]]; then echo $F_0xc3
+    elif [[ $1 -lt 160 ]]; then echo $F_0xe7
+    elif [[ $1 -lt 180 ]]; then echo $F_0xe6
+    elif [[ $1 -lt 200 ]]; then echo $F_0xe5
+    elif [[ $1 -lt 230 ]]; then echo $F_0xe4
+    elif [[ $1 -lt 260 ]]; then echo $F_0xe3
+    elif [[ $1 -lt 290 ]]; then echo $F_0xe2
+    elif [[ $1 -lt 320 ]]; then echo $F_0xdc
+    elif [[ $1 -lt 360 ]]; then echo $F_0xd6
+    elif [[ $1 -lt 400 ]]; then echo $F_0xd0
+    elif [[ $1 -lt 450 ]]; then echo $F_0xca
+    elif [[ $1 -lt 500 ]]; then echo $F_0xa0
     else                        echo $F_0x7c
     fi
 } # }}}
