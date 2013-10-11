@@ -112,7 +112,8 @@ function prompt_commands() { # {{{
     set_prompt_vars
 
     # Set title and a colorized path
-    set_title "$PWD_TITLE « $USERHOST"
+    export WINDOW_TITLE="$PWD_TITLE « $USERHOST"
+    TITLE_SEQ=`set_title "$WINDOW_TITLE"`
     PWD_COLOR="${COLOR_CLEAR}${C_DIR}${PWD_ELIP}${COLOR_CLEAR}"
 
 } # }}}
@@ -130,10 +131,11 @@ XU="\[${COLOR_USER}\]"
 XH="\[${COLOR_HOST}\]"
 XC="\[${COLOR_CLEAR}\]"
 
+PS1_title="\[\${TITLE_SEQ}\]"
 PS1_line1="${XL}╭─ \${PWD_COLOR}${XL} ◄──\${PROMPT_BAR} ${XU}\u${XL}@${XH}\h${XL} ◄── ${XT}\d, \t${XC}${XL} ◄─╯"
 PS1_line2="${XL}╰──► ${XC}"
 
-PS1="\n${PS1_line1}\n${PS1_line2}"
+PS1="${PS1_title}${PS1_line1}\\n${PS1_line2}"
 PS2="${XL}   ╰─► ${XC}"
 
 # ================================================================  # }}}
