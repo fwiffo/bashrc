@@ -30,9 +30,9 @@ fi
 if [ $NUM_COLORS -ge 256 ]; then
   source ~/.bashkit/colorize_256.sh
 elif [ $NUM_COLORS -ge 16 ]; then
-  source ~/.bashkit_colorize_16.sh
+  source ~/.bashkit/colorize_16.sh
 else
-  source ~/.bashkit_colorize_void.sh
+  source ~/.bashkit/colorize_void.sh
 fi
 
 source ~/.bashkit/util.sh
@@ -88,15 +88,15 @@ fi
 function set_prompt_vars() { # {{{
 
     # Find out how much space we have for our prompt
-    LEN_PROMPT=100
-    if [[ $COLUMNS -lt 100 ]]; then LEN_PROMPT=$COLUMNS; fi
+    LEN_PROMPT=160
+    if [[ $COLUMNS -lt 160 ]]; then LEN_PROMPT=$COLUMNS; fi
 
     # Create some abbreviated paths
-    LEN_PATH=$(expr $LEN_PROMPT - 3 - 4 - 1 - ${#USERHOST} - 5 - 20 - 4)
+    LEN_PATH=$(expr $LEN_PROMPT - 3 - 3 - 1 - ${#USERHOST} - 5 - 20 - 4)
     PWD_ELIP=$(ellipsis_path "$PWD" $LEN_PATH)
     PWD_TITLE=$(ellipsis_path "$PWD" $(expr $LEN_PROMPT / 3))
 
-    LEN_BAR=$(expr $LEN_PATH - ${#PWD_ELIP})
+    LEN_BAR=$(expr $LEN_PROMPT - ${#USERHOST} - 30)
     PROMPT_BAR=$(eval printf '─%.0s' {1..$LEN_BAR})
 
     # Get colors for load and path
@@ -132,10 +132,11 @@ XH="\[${COLOR_HOST}\]"
 XC="\[${COLOR_CLEAR}\]"
 
 PS1_title="\[\${TITLE_SEQ}\]"
-PS1_line1="${XL}╭─ \${PWD_COLOR}${XL} ◄──\${PROMPT_BAR} ${XU}\u${XL}@${XH}\h${XL} ◄── ${XT}\d, \t${XC}${XL} ◄─╯"
+PS1_line0="${XL}\${PROMPT_BAR} ${XU}\u${XL}@${XH}\h${XL} ◄── ${XT}\d, \t${XC}${XL} ◄─╯"
+PS1_line1="${XL}╭─ \${PWD_COLOR}${XL} ◄──"
 PS1_line2="${XL}╰──► ${XC}"
 
-PS1="${PS1_title}${PS1_line1}\\n${PS1_line2}"
+PS1="${PS1_title}${PS1_line0}\\r${PS1_line1}\\n${PS1_line2}"
 PS2="${XL}   ╰─► ${XC}"
 
 # ================================================================  # }}}

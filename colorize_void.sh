@@ -9,9 +9,11 @@ COLOR_CLOCK=""
 COLOR_USER=""
 
 function get_dir_color() { # {{{
+    return
     # sad sack
 } # }}}
 
 function get_load_color() { # {{{
+    return
     # sad sack
 } # }}}
