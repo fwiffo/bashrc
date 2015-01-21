@@ -14,8 +14,10 @@ function ellipsis_path() { # {{{
         return
     fi
 
+    local LAST="$1"
     local ELIP_PATH="${1#/}"
-    while [ ${#ELIP_PATH} -gt `expr $2 - 2` ] && [ "${ELIP_PATH}" != "${1##/*/}" ]; do
+    while [ ${#ELIP_PATH} -gt `expr $2 - 2` ] && [ "${ELIP_PATH}" != "${1##/*/}" ] && [ "${ELIP_PATH}" != "${LAST}" ]; do
+        LAST="$ELIP_PATH"
         ELIP_PATH="${ELIP_PATH#*/}"
     done
 
