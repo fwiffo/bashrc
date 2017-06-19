@@ -76,15 +76,15 @@ function get_load_color() { # {{{
         return
     fi
 
-    if   [[ $1 -lt  10 ]]; then echo $F_DBLUE
-    elif [[ $1 -lt  20 ]]; then echo $F_LBLUE
-    elif [[ $1 -lt  30 ]]; then echo $F_DCYAN
-    elif [[ $1 -lt  50 ]]; then echo $F_DGREEN
-    elif [[ $1 -lt  70 ]]; then echo $F_LCYAN
-    elif [[ $1 -lt  90 ]]; then echo $F_LGREEN
-    elif [[ $1 -lt 110 ]]; then echo $F_LYELLOW
-    elif [[ $1 -lt 140 ]]; then echo $F_DYELLOW
-    elif [[ $1 -lt 170 ]]; then echo $F_DRED
+    if   [[ $1 -lt  20 ]]; then echo $F_DBLUE
+    elif [[ $1 -lt  40 ]]; then echo $F_LBLUE
+    elif [[ $1 -lt  60 ]]; then echo $F_DCYAN
+    elif [[ $1 -lt 100 ]]; then echo $F_DGREEN
+    elif [[ $1 -lt 140 ]]; then echo $F_LCYAN
+    elif [[ $1 -lt 180 ]]; then echo $F_LGREEN
+    elif [[ $1 -lt 220 ]]; then echo $F_LYELLOW
+    elif [[ $1 -lt 280 ]]; then echo $F_DYELLOW
+    elif [[ $1 -lt 340 ]]; then echo $F_DRED
     else                        echo $F_LRED
     fi
 } # }}}

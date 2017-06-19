@@ -1,6 +1,6 @@
 ! Remap side button to middle button on Logitech mouse because middle button
 ! is hard with the tilt wheel
-pointer = 1 8 3 4 5 6 7 2 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24
+pointer = 1 10 3 4 5 6 7 8 9 2 11 12 13 14 15 16 17 18 19 20 21 22 23 24
 
 ! Replace CapsLock with extra Control_L
 clear Lock
